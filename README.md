@@ -2,9 +2,7 @@
 
 Join our discord server: https://discord.gg/hNSyTvuy2v
 
-Release notes:
-Added new functional:
-modules and commands:
+Virtel modules and commands:
 - sys
   - out (your-text-or-var)
 - var
