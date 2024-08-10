@@ -1,0 +1,10 @@
+[package]
+name = "virtel"
+version = "0.1.2"
+edition = "2021"
+
+[dependencies]
+chrono = "0.4.38"
+regex = "1.10.5"
+serde-hjson = "1.0.0"
+
