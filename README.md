@@ -1,6 +1,6 @@
 # Virtel
 
-Your safe, secure, speed and best virtual work environment. Best suited for math calculations, home use, development and deployment of common applications and servers.
+Your safe, secure, speed and best virtual work environment. Best suited for math calculations, home use, development and deployment of common applications and servers. We call it the **operating system**.
 
 Join our discord server: https://discord.gg/hNSyTvuy2v
 
