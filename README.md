@@ -4,7 +4,15 @@ Join our discord server: https://discord.gg/hNSyTvuy2v
 
 Please see last releases on Releases page.
 
-## Virtel modules and commands:
+## Available platforms
+- [x] Windows
+- [ ] Linux
+- [ ] MacOS
+- [ ] iOS
+- [ ] Android
+- [ ] Native (OS)
+
+## Virtel modules and commands
 - sys
   - out (your-text-or-var)
 - var
@@ -45,7 +53,7 @@ sys out "This is run";
 ```
 
 
-### Other using cases:
+### Other using cases
 ```
 var set a 5;
 var set b 5;
