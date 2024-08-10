@@ -2,7 +2,9 @@
 
 Join our discord server: https://discord.gg/hNSyTvuy2v
 
-Virtel modules and commands:
+Please see last releases on Releases page.
+
+## Virtel modules and commands:
 - sys
   - out (your-text-or-var)
 - var
@@ -23,7 +25,7 @@ Virtel modules and commands:
   - incr (increment)
   - decr (decrement)
 
-Code sample:
+## Code samples
 
 C:/Virtel/apps/vladceresna.virtel.launcher/bin/start.steps
 ```
@@ -43,7 +45,7 @@ sys out "This is run";
 ```
 
 
-Other using cases:
+### Other using cases:
 ```
 var set a 5;
 var set b 5;
