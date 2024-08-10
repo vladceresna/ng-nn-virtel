@@ -1,12 +1,35 @@
 # Virtel
 
+Your safe, secure, speed and best virtual work environment. Best suited for math calculations, home use, development and deployment of common applications and servers.
+
 Join our discord server: https://discord.gg/hNSyTvuy2v
 
 Please see last releases on Releases page.
 
+## Hello developer!
+### If you know...
+
+Rust, you can help to create:
+- ide for writing programs to run on Virtel
+- programming languages (and library registries, builder, etc) compilers that will compile programs to steps code
+
+Nothing or any other language, you can help:
+- with developing your own or someone else's software for Virtel.
+- with writing documentation for Virtel
+
+## Hello user!
+### If you can run Virtel on your machine...
+
+You can help:
+- with testing and reporting about issues and bugs on platform
+
+## Our target
+Delete all software on windows/linux/android/etc, install Virtel, and feel awesome!
+
 ## Available platforms
 - [x] Windows
 - [ ] Linux
+- [ ] Redox
 - [ ] MacOS
 - [ ] iOS
 - [ ] Android
