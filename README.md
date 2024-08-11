@@ -8,6 +8,8 @@
 
 `🎯` What is the point of Virtel? Our goal is pretty simple: instead of writing software for different platforms separately or adding compatibility with other OS(es) later, we want people to write programs via **Virtel** - this **allows your code to run on practically any machine**, as Virtel is specifically made to be compatible with most platforms.
 
+Please see last releases on Releases page and join our Discord server: https://discord.gg/hNSyTvuy2v .
+
 --------------
 ### We need help!
 `🫂` Virtel is currently in the stage of early development, which means that as for now, most of the desired functionality is not here yet. For that reason, we need **your help** to develop Virtel.
