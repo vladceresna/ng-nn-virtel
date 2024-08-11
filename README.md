@@ -1,6 +1,6 @@
-<p style="text-align: center">
-<a href="https://imgbb.com/"><img src="https://i.ibb.co/qyR4V54/a2c68588eab85ad2459788d74bd36534.webp" alt="a2c68588eab85ad2459788d74bd36534" border="0"></a>
-<h2 style="text-align: center"><u>Virtel</u>: Your best virtual enviroment</h2>
+<p align="center">
+<img src='https://i.postimg.cc/d0WWH1MR/a2c68588eab85ad2459788d74bd36534.webp' border='0'/>
+<h1 align="center"><u>Virtel</u>: Your best virtual enviroment</h1>
 </p>
 
 -------------
@@ -39,7 +39,7 @@ If you know the programming language **Rust**, you can help us to develop Virtel
 * `math incr {name of the var to increment}`
 * `math decr {name of the var to decrement}`
 
-### Example of the code
+### Example of the code:
 Code:
 ```
 var set greet "Hello!";
