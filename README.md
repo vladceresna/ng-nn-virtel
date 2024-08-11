@@ -39,16 +39,51 @@ If you know the programming language **Rust**, you can help us to develop Virtel
 * `math incr {name of the var to increment}`
 * `math decr {name of the var to decrement}`
 
-### Example of the code:
-Code:
+### Different code examples:
+#### Basic example, working with `bin run`: 
+`start.steps` is always a starting point for any Steps application. In this example we also jump to the `run.steps` file.
+
+Path of the file (may depend on the system): `C:/Virtel/apps/vladceresna.virtel.launcher/bin/start.steps`
+
+Script in `start.steps`:
 ```
 var set greet "Hello!";
 sys out greet;
+var set greet "Hi!";
+sys out greet;
+var del greet;
+sys out greet;
+bin run run.steps;
 ```
-Output::
+Script in `run.steps`:
+```
+sys out "Hello from run";
+sys out "This is run";
+```
 
+#### Another example, working with math commmands:
+This example briefly shows how you can use mathematics in Steps.
+
+Steps Code:
 ```
-Hello!
+var set a 5;
+var set b 5;
+math plus a b c;
+sys out c;
+```
+Output of the code:
+```
+10
+```
+
+#### Here's another mathematical example showing the root command:
+```
+math root "27" "3" c;
+sys out c;
+```
+Outputs:
+```
+3
 ```
 
 ---------
