@@ -12,12 +12,13 @@ use super::step;
 
 pub struct System {
     /* lists: HashMap<String, Vec<String>>, */
+    id: String,
     vars: HashMap<String, String>,
     bins: Vec<String>,
 }
 impl System {
-    pub fn new(bins : Vec<String>) -> System {
-        System {/*  lists: HashMap::new(),  */vars: HashMap::new(), bins }
+    pub fn new(id: String, bins: Vec<String>) -> System {
+        System {/*  lists: HashMap::new(),  */ id, vars: HashMap::new(), bins }
     }
 
     pub fn var_del(&mut self, name: String) -> Result<bool, String>{
@@ -74,8 +75,11 @@ impl System {
 
     
     pub fn start(&mut self){
-        let code: String = self.get_bin_with_name("start.steps".to_string()).expect("REASON");
-        self.run(code);
+        let result = self.get_bin_with_name("start.steps".to_string());
+        match result {
+            Ok(_) => {self.run(result.unwrap());},
+            Err(_) => {logger::log(format!("Bin file start.steps not found in scope of {} application", self.id), logger::LogType::ERROR);}
+        }
     }
     fn get_bin_with_name(&mut self, name: String) -> Result<String, Box<dyn Error>>{
         for file_path in self.bins.clone() {
@@ -162,6 +166,37 @@ impl System {
     }
 
 
+
+    pub fn str_plus(&mut self, mut args: Vec<String>) -> Result<bool, String> {
+        let res_var = args.pop().unwrap();
+        let mut res_value = String::from("");
+        for arg in args {
+            res_value.push_str(self.var_get(arg).unwrap().as_str());
+        }
+        self.var_set(res_var, to_value_str(res_value.as_mut_str()))
+    }
+    pub fn str_cut(&mut self, source: String, left: String, right: String, res_var: String) -> Result<bool, String> {
+        let source = self.var_get(source).unwrap();
+        let left = to_number_str(self.var_get(left).unwrap()) as u64;
+        let right = to_number_str(self.var_get(right).unwrap()) as u64;
+        let mut i = 0;
+        let mut res_value = String::from("");
+        for char in source.chars() {
+            if i>=left && i<=right {
+                res_value.push(char);
+            }
+            i += 1;
+        }
+        self.var_set(res_var, to_value_str(res_value.as_mut_str()))
+    }
+    pub fn str_len(&mut self, source: String, res_var: String) -> Result<bool, String> {
+        let source = self.var_get(source).unwrap();
+        let res_value = source.chars().count();
+        self.var_set(res_var, to_value_num(res_value as f64))
+    }
+
+
+
     /*
     fn dir_new(path: String) -> Result<(bool), String>;
     fn dir_del(path: String) -> Result<(bool), String>;
@@ -193,28 +228,40 @@ impl System {
         let mut el_id = 0;
         let mut line = 0;
         let mut step = step::Step::new();
-    
+
+        let mut cav = false;
+
         for char in code.chars() {
-            if char == ' ' {
-                if el_id == 0 {
-                    step.set_module(last_string.clone().trim().to_string());
-                } else if el_id == 1 {
-                    step.set_command(last_string.clone());
-                } else {
-                    step.add_arg(last_string.clone());
+            if cav {
+                last_string.push(char.clone());
+                if char == '"' {
+                    cav = false;
                 }
-                el_id += 1;
-                last_string = String::new();
-            } else if char == ';' {
-                el_id = 0;
-                step.add_arg(last_string);
-                step.set_line(line);
-                last_string = String::new();
-                self.run_step(&step);
-                step = step::Step::new();
-                line += 1;
             } else {
-                last_string.push(char);
+                if char == '"' {
+                    last_string.push(char);
+                    cav = true;
+                } else if char == ' ' {
+                    if el_id == 0 {
+                        step.set_module(last_string.clone().trim().to_string());
+                    } else if el_id == 1 {
+                        step.set_command(last_string.clone());
+                    } else {
+                        step.add_arg(last_string.clone());
+                    }
+                    el_id += 1;
+                    last_string = String::new();
+                } else if char == ';' {
+                    el_id = 0;
+                    step.add_arg(last_string);
+                    step.set_line(line);
+                    last_string = String::new();
+                    self.run_step(&step);
+                    step = step::Step::new();
+                    line += 1;
+                } else {
+                    last_string.push(char);
+                }
             }
         }
     
@@ -284,6 +331,20 @@ impl System {
                 },
                 "decr" => {
                     self.math_decr(step.args_get(0));
+                },
+                _ => {
+                    logger::log(format!("Unknown command: {} in module: {} on line {}", step.get_command(), step.get_module(), step.get_line()), logger::LogType::ERROR);
+                }
+            },
+            "str" => match step.get_command().as_str() {
+                "plus" => {
+                    self.str_plus(step.get_args());
+                },
+                "cut" => {
+                    self.str_cut(step.args_get(0), step.args_get(1), step.args_get(2), step.args_get(3));
+                },
+                "len" => {
+                    self.str_len(step.args_get(0), step.args_get(1));
                 },
                 _ => {
                     logger::log(format!("Unknown command: {} in module: {} on line {}", step.get_command(), step.get_module(), step.get_line()), logger::LogType::ERROR);
