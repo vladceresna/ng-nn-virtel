@@ -1,6 +1,6 @@
 
 use std::collections::HashMap;
-use std::io;
+use std::{error, io};
 use std::num::ParseFloatError;
 use regex::Regex;
 use crate::logger::LogType;
@@ -25,11 +25,17 @@ impl System {
         self.vars.remove(&name);
         Ok(true)
     }
+    /// Need to set value as it inputed by user
+    /// For example: 
+    /// "value" for clear value and
+    /// var for copy value
     pub fn var_set(&mut self, name: String, value: String) -> Result<bool, String>{
         let value = self.var_get(value).unwrap();
         self.vars.insert(name.clone(), value);
         Ok(true)
     }
+    /// Gets from value: "value"=value
+    /// and as var: var=value
     pub fn var_get(&mut self, name: String) -> Result<String, String>{
         let name = name.trim().to_string();
         if is_value(name.clone()).unwrap() {
@@ -197,18 +203,50 @@ impl System {
 
 
 
+    
+    fn dir_new(&mut self, path: String) -> Result<bool, String>{
+        let path = self.var_get(path);
+        match fs::create_dir_all(path) {
+            Ok(_) => {
+                return Ok(true);
+            },
+            Err(error) => {
+                logger::log(format!("Error while creating dir {}: {}", path, error), logger::LogType::ERROR);
+                return Ok(false);
+            }
+        }
+    }
+    fn dir_del(&mut self, path: String) -> Result<bool, String>{
+
+    }
+    fn dir_is_exists(&mut self, path: String) -> Result<bool, String>{
+
+    }
+
+    fn file_new(&mut self, path: String) -> Result<bool, String>{
+
+    }
+    fn file_del(&mut self, path: String) -> Result<bool, String>{
+
+    }
+    fn file_write(&mut self, path: String, value: String) -> Result<bool, String>{
+
+    }
+    fn file_push(&mut self, path: String, value: String) -> Result<bool, String>{
+
+    }
+    fn file_get(&mut self, path: String) -> Result<String, String>{
+
+    }
+    fn file_is_exists(&mut self, path: String) -> Result<bool, String>{
+
+    }
+    
+    
+    
+    
+    
     /*
-    fn dir_new(path: String) -> Result<(bool), String>;
-    fn dir_del(path: String) -> Result<(bool), String>;
-    fn dir_is_exists(path: String) -> Result<(bool), String>;
-
-    fn file_new(path: String) -> Result<(bool), String>;
-    fn file_del(path: String) -> Result<(bool), String>;
-    fn file_write(path: String, value: String) -> Result<(bool), String>;
-    fn file_push(path: String, value: String) -> Result<(bool), String>;
-    fn file_get(path: String) -> Result<(String), String>;
-    fn file_is_exists(path: String) -> Result<(bool), String>;
-
     fn server_new(name: String, port: String) -> Result<(bool), String>;
 
     fn client_new(name: String) -> Result<(bool), String>;
