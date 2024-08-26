@@ -4,7 +4,7 @@ use super::apps;
 use std::io;
 
 pub fn launch() -> Result<bool, String> {
-    let version = "0.1.0";
+    let version = "0.1.3";
     logger::log(format!("Starting Virtel {version}"), logger::LogType::INFO);
     logger::log(files::init_environment(), logger::LogType::INFO);
     logger::log(format!("Initialized Virtel environment"), logger::LogType::INFO);

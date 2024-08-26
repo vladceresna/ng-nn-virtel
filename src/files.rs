@@ -35,20 +35,26 @@ pub fn get_all_files(dir: &Path) -> Vec<String> {
 
 #[cfg(target_os = "windows")]
 pub fn init_environment() -> String {
-    create_dir(String::from("C:/Virtel/"))
+    create_dir(String::from("C:/Virtel/apps/vladceresna.virtel.launcher/bin/"))
 }
 #[cfg(target_os = "android")]
 pub fn init_environment() -> String {
-    create_dir(String::from("/storage/emulated/0/Virtel/"))
+    create_dir(String::from("/storage/emulated/0/Virtel/apps/vladceresna.virtel.launcher/bin/"))
 }
 #[cfg(target_os = "linux")]
 pub fn init_environment() -> String {
-    create_dir(String::from("/home/Virtel/"))
+    create_dir(String::from("/home/Virtel/apps/vladceresna.virtel.launcher/bin/"))
 }
 pub fn create_dir(path: String) -> String {
     match fs::create_dir(path.clone()) {
         Ok(_) => format!("Dir {} created successfully!", path),
-        Err(error) => format!("Error while creating dir: {path}: {}", error),
+        Err(error) => {
+            if error.raw_os_error().unwrap() == 183 {
+                format!("Path found successfully: {path}")
+            } else {
+                format!("Error while creating dir: {path}: {}", error)
+            }
+        }
     }
 }
 

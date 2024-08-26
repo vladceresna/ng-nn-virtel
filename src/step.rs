@@ -37,4 +37,10 @@ pub struct Step {
     pub fn set_line(&mut self, line: i32) {
         self.line = line;
     }
+
+
+    pub fn args_get(&self, index: usize) -> String {
+        self.get_args().get(index).unwrap().clone()
+    }
+
 }
