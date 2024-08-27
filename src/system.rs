@@ -205,8 +205,8 @@ impl System {
 
     
     fn dir_new(&mut self, path: String) -> Result<bool, String>{
-        let path = self.var_get(path);
-        match fs::create_dir_all(path) {
+        let path = self.var_get(path).unwrap();
+        match fs::create_dir_all(path.clone()) {
             Ok(_) => {
                 return Ok(true);
             },
@@ -217,29 +217,88 @@ impl System {
         }
     }
     fn dir_del(&mut self, path: String) -> Result<bool, String>{
-
+        let path = self.var_get(path).unwrap();
+        match fs::remove_dir_all(path.clone()) {
+            Ok(_) => {
+                return Ok(true);
+            },
+            Err(error) => {
+                logger::log(format!("Error while deleting dir {}: {}", path, error), logger::LogType::ERROR);
+                return Ok(false);
+            }
+        }
     }
-    fn dir_is_exists(&mut self, path: String) -> Result<bool, String>{
-
-    }
-
     fn file_new(&mut self, path: String) -> Result<bool, String>{
-
+        let path = self.var_get(path).unwrap();
+        match fs::create_dir_all(path.clone()) {
+            Ok(_) => {
+                return Ok(true);
+            },
+            Err(error) => {
+                logger::log(format!("Error while creating dir {}: {}", path, error), logger::LogType::ERROR);
+                return Ok(false);
+            }
+        }
     }
     fn file_del(&mut self, path: String) -> Result<bool, String>{
-
+        let path = self.var_get(path).unwrap();
+        match fs::create_dir_all(path.clone()) {
+            Ok(_) => {
+                return Ok(true);
+            },
+            Err(error) => {
+                logger::log(format!("Error while creating dir {}: {}", path, error), logger::LogType::ERROR);
+                return Ok(false);
+            }
+        }
     }
     fn file_write(&mut self, path: String, value: String) -> Result<bool, String>{
-
+        let path = self.var_get(path).unwrap();
+        match fs::create_dir_all(path.clone()) {
+            Ok(_) => {
+                return Ok(true);
+            },
+            Err(error) => {
+                logger::log(format!("Error while creating dir {}: {}", path, error), logger::LogType::ERROR);
+                return Ok(false);
+            }
+        }
     }
     fn file_push(&mut self, path: String, value: String) -> Result<bool, String>{
-
+        let path = self.var_get(path).unwrap();
+        match fs::create_dir_all(path.clone()) {
+            Ok(_) => {
+                return Ok(true);
+            },
+            Err(error) => {
+                logger::log(format!("Error while creating dir {}: {}", path, error), logger::LogType::ERROR);
+                return Ok(false);
+            }
+        }
     }
     fn file_get(&mut self, path: String) -> Result<String, String>{
-
+        let path = self.var_get(path).unwrap();
+        match fs::create_dir_all(path.clone()) {
+            Ok(_) => {
+                return Ok(true);
+            },
+            Err(error) => {
+                logger::log(format!("Error while creating dir {}: {}", path, error), logger::LogType::ERROR);
+                return Ok(false);
+            }
+        }
     }
     fn file_is_exists(&mut self, path: String) -> Result<bool, String>{
-
+        let path = self.var_get(path).unwrap();
+        match fs::create_dir_all(path.clone()) {
+            Ok(_) => {
+                return Ok(true);
+            },
+            Err(error) => {
+                logger::log(format!("Error while creating dir {}: {}", path, error), logger::LogType::ERROR);
+                return Ok(false);
+            }
+        }
     }
     
     
