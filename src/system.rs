@@ -187,6 +187,37 @@ impl System {
         let a_value = to_number_str(self.var_get(a.clone()).unwrap());
         self.var_set(a,to_value_num(a_value - 1.0))
     }
+    pub fn math_eq(&mut self, a: String, b: String, c: String) -> Result<bool, String> {
+        let a = to_number_str(self.var_get(a.clone()).unwrap());
+        let b = to_number_str(self.var_get(b.clone()).unwrap());
+        self.var_set(c,to_value_str((a == b).to_string().as_mut_str()))
+    }
+    pub fn math_neq(&mut self, a: String, b: String, c: String) -> Result<bool, String> {
+        let a = to_number_str(self.var_get(a.clone()).unwrap());
+        let b = to_number_str(self.var_get(b.clone()).unwrap());
+        self.var_set(c,to_value_str((a != b).to_string().as_mut_str()))
+    }
+    pub fn math_lg(&mut self, a: String, b: String, c: String) -> Result<bool, String> {
+        let a = to_number_str(self.var_get(a.clone()).unwrap());
+        let b = to_number_str(self.var_get(b.clone()).unwrap());
+        self.var_set(c,to_value_str((a > b).to_string().as_mut_str()))
+    }
+    pub fn math_sm(&mut self, a: String, b: String, c: String) -> Result<bool, String> {
+        let a = to_number_str(self.var_get(a.clone()).unwrap());
+        let b = to_number_str(self.var_get(b.clone()).unwrap());
+        self.var_set(c,to_value_str((a < b).to_string().as_mut_str()))
+    }
+    pub fn math_lgeq(&mut self, a: String, b: String, c: String) -> Result<bool, String> {
+        let a = to_number_str(self.var_get(a.clone()).unwrap());
+        let b = to_number_str(self.var_get(b.clone()).unwrap());
+        self.var_set(c,to_value_str((a >= b).to_string().as_mut_str()))
+    }
+    pub fn math_smeq(&mut self, a: String, b: String, c: String) -> Result<bool, String> {
+        let a = to_number_str(self.var_get(a.clone()).unwrap());
+        let b = to_number_str(self.var_get(b.clone()).unwrap());
+        self.var_set(c,to_value_str((a <= b).to_string().as_mut_str()))
+    }
+
 
 
 
@@ -221,6 +252,12 @@ impl System {
         let source1 = self.var_get(source1).unwrap();
         let source2 = self.var_get(source2).unwrap();
         let mut res_value = (source1 == source2).to_string();
+        self.var_set(res_var, to_value_str(res_value.as_mut_str()))
+    }
+    fn str_neq(&mut self, source1: String, source2: String, res_var: String) -> Result<bool, String> {
+        let source1 = self.var_get(source1).unwrap();
+        let source2 = self.var_get(source2).unwrap();
+        let mut res_value = (source1 != source2).to_string();
         self.var_set(res_var, to_value_str(res_value.as_mut_str()))
     }
 
@@ -455,6 +492,24 @@ impl System {
                 "decr" => {
                     self.math_decr(step.args_get(0));
                 },
+                "eq" => {
+                    self.math_lg(step.args_get(0), step.args_get(1), step.args_get(2));
+                },
+                "neq" => {
+                    self.math_lg(step.args_get(0), step.args_get(1), step.args_get(2));
+                },
+                "lg" => {
+                    self.math_lg(step.args_get(0), step.args_get(1), step.args_get(2));
+                },
+                "sm" => {
+                    self.math_sm(step.args_get(0), step.args_get(1), step.args_get(2));
+                },
+                "lgeq" => {
+                    self.math_lgeq(step.args_get(0), step.args_get(1), step.args_get(2));
+                },
+                "smeq" => {
+                    self.math_smeq(step.args_get(0), step.args_get(1), step.args_get(2));
+                },
                 _ => {
                     logger::log(format!("Unknown command: {} in module: {} on line {}", step.get_command(), step.get_module(), step.get_line()), logger::LogType::ERROR);
                 }
@@ -470,6 +525,9 @@ impl System {
                     self.str_len(step.args_get(0), step.args_get(1));
                 },
                 "eq" => {
+                    self.str_eq(step.args_get(0), step.args_get(1), step.args_get(2));
+                },
+                "neq" => {
                     self.str_eq(step.args_get(0), step.args_get(1), step.args_get(2));
                 },
                 _ => {
