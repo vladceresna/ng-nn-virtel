@@ -1,5 +1,6 @@
 
 use std::collections::HashMap;
+use std::io::Write;
 use std::{error, io};
 use std::num::ParseFloatError;
 use regex::Regex;
@@ -7,6 +8,7 @@ use crate::logger::LogType;
 
 use super::logger;
 use std::fs;
+use std::path;
 use std::error::Error;
 use super::step;
 
@@ -216,6 +218,19 @@ impl System {
             }
         }
     }
+    fn dir_exists(&mut self, path: String, res_var: String) -> Result<bool, String>{
+        let path = self.var_get(path).unwrap();
+        match path::Path::new(path.clone().as_str()).try_exists() {
+            Ok(v) => {
+                self.var_set(res_var, to_value_str(v.to_string().as_mut_str()));
+                return Ok(true);
+            },
+            Err(error) => {
+                logger::log(format!("Error while creating dir {}: {}", path, error), logger::LogType::ERROR);
+                return Ok(false);
+            }
+        }
+    }
     fn dir_del(&mut self, path: String) -> Result<bool, String>{
         let path = self.var_get(path).unwrap();
         match fs::remove_dir_all(path.clone()) {
@@ -228,10 +243,25 @@ impl System {
             }
         }
     }
-    fn file_new(&mut self, path: String) -> Result<bool, String>{
+    fn file_write(&mut self, path: String, value: String) -> Result<bool, String>{
         let path = self.var_get(path).unwrap();
-        match fs::create_dir_all(path.clone()) {
+        let value = self.var_get(value).unwrap();
+        
+        match fs::write(path.clone(), value.clone()) {
             Ok(_) => {
+                return Ok(true);
+            },
+            Err(error) => {
+                logger::log(format!("Error while writing file {}: {}", path, error), logger::LogType::ERROR);
+                return Ok(false);
+            }
+        }
+    }
+    fn file_get(&mut self, path: String, res_var: String) -> Result<bool, String>{
+        let path = self.var_get(path).unwrap();
+        match fs::read_to_string(path.clone()) {
+            Ok(mut v) => {
+                self.var_set(res_var, to_value_str(v.as_mut_str()));
                 return Ok(true);
             },
             Err(error) => {
@@ -239,58 +269,13 @@ impl System {
                 return Ok(false);
             }
         }
+    }
+    fn file_exists(&mut self, path: String, res_var: String) -> Result<bool, String>{
+        self.dir_exists(path, res_var)
     }
     fn file_del(&mut self, path: String) -> Result<bool, String>{
         let path = self.var_get(path).unwrap();
-        match fs::create_dir_all(path.clone()) {
-            Ok(_) => {
-                return Ok(true);
-            },
-            Err(error) => {
-                logger::log(format!("Error while creating dir {}: {}", path, error), logger::LogType::ERROR);
-                return Ok(false);
-            }
-        }
-    }
-    fn file_write(&mut self, path: String, value: String) -> Result<bool, String>{
-        let path = self.var_get(path).unwrap();
-        match fs::create_dir_all(path.clone()) {
-            Ok(_) => {
-                return Ok(true);
-            },
-            Err(error) => {
-                logger::log(format!("Error while creating dir {}: {}", path, error), logger::LogType::ERROR);
-                return Ok(false);
-            }
-        }
-    }
-    fn file_push(&mut self, path: String, value: String) -> Result<bool, String>{
-        let path = self.var_get(path).unwrap();
-        match fs::create_dir_all(path.clone()) {
-            Ok(_) => {
-                return Ok(true);
-            },
-            Err(error) => {
-                logger::log(format!("Error while creating dir {}: {}", path, error), logger::LogType::ERROR);
-                return Ok(false);
-            }
-        }
-    }
-    fn file_get(&mut self, path: String) -> Result<String, String>{
-        let path = self.var_get(path).unwrap();
-        match fs::create_dir_all(path.clone()) {
-            Ok(_) => {
-                return Ok(true);
-            },
-            Err(error) => {
-                logger::log(format!("Error while creating dir {}: {}", path, error), logger::LogType::ERROR);
-                return Ok(false);
-            }
-        }
-    }
-    fn file_is_exists(&mut self, path: String) -> Result<bool, String>{
-        let path = self.var_get(path).unwrap();
-        match fs::create_dir_all(path.clone()) {
+        match fs::remove_file(path.clone()) {
             Ok(_) => {
                 return Ok(true);
             },
@@ -442,6 +427,37 @@ impl System {
                 },
                 "len" => {
                     self.str_len(step.args_get(0), step.args_get(1));
+                },
+                _ => {
+                    logger::log(format!("Unknown command: {} in module: {} on line {}", step.get_command(), step.get_module(), step.get_line()), logger::LogType::ERROR);
+                }
+            },
+            "dir" => match step.get_command().as_str() {
+                "new" => {
+                    self.dir_new(step.args_get(0));
+                },
+                "del" => {
+                    self.dir_del(step.args_get(0));
+                },
+                "exists" => {
+                    self.dir_exists(step.args_get(0), step.args_get(1));
+                },
+                _ => {
+                    logger::log(format!("Unknown command: {} in module: {} on line {}", step.get_command(), step.get_module(), step.get_line()), logger::LogType::ERROR);
+                }
+            },
+            "file" => match step.get_command().as_str() {
+                "write" => {
+                    self.file_write(step.args_get(0),step.args_get(1));
+                },
+                "get" => {
+                    self.file_get(step.args_get(0),step.args_get(1));
+                },
+                "del" => {
+                    self.file_del(step.args_get(0));
+                },
+                "exists" => {
+                    self.file_exists(step.args_get(0),step.args_get(1));
                 },
                 _ => {
                     logger::log(format!("Unknown command: {} in module: {} on line {}", step.get_command(), step.get_module(), step.get_line()), logger::LogType::ERROR);
