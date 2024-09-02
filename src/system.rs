@@ -98,7 +98,7 @@ impl System {
         Err(format!("File {name} not found").into())
     }
 
-    pub fn bin_run(&mut self, file_name: String){
+    pub fn run_one(&mut self, file_name: String){
         let file_name = self.var_get(file_name).unwrap();
         let get_code_res = self.get_bin_with_name(file_name.clone());
         let code: String;
@@ -109,6 +109,21 @@ impl System {
             Err(_) => {
                 logger::log(format!("Bin with name {file_name} not found"), logger::LogType::ERROR);
             }
+        }
+    }
+    pub fn run_if(&mut self, truely: String, file_name1: String, file_name2: String){
+        let truely = self.var_get(truely).unwrap();
+        if(truely == "true") {
+            self.run_one(file_name1);
+        } else {
+            if file_name2 != "not" {
+                self.run_one(file_name2);
+            }
+        }
+    }
+    pub fn run_while(&mut self, truely: String, file_name: String){
+        while(self.var_get(truely.clone()).unwrap() == "true") {
+            self.run_one(file_name.clone());
         }
     }
 
@@ -506,9 +521,15 @@ impl System {
                     logger::log(format!("Unknown command: {} in module: {} on line {}", step.get_command(), step.get_module(), step.get_line()), logger::LogType::ERROR);
                 }
             },
-            "bin" => match step.get_command().as_str() {
-                "run" => {
-                    self.bin_run(step.args_get(0));
+            "run" => match step.get_command().as_str() {
+                "one" => {
+                    self.run_one(step.args_get(0));
+                },
+                "if" => {
+                    self.run_if(step.args_get(0), step.args_get(1), step.args_get(2));
+                },
+                "while" => {
+                    self.run_while(step.args_get(0), step.args_get(1));
                 },
                 _ => {
                     logger::log(format!("Unknown command: {} in module: {} on line {}", step.get_command(), step.get_module(), step.get_line()), logger::LogType::ERROR);
