@@ -202,6 +202,32 @@ impl System {
         let res_value = source.chars().count();
         self.var_set(res_var, to_value_num(res_value as f64))
     }
+    fn str_eq(&mut self, source1: String, source2: String, res_var: String) -> Result<bool, String> {
+        let source1 = self.var_get(source1).unwrap();
+        let source2 = self.var_get(source2).unwrap();
+        let mut res_value = (source1 == source2).to_string();
+        self.var_set(res_var, to_value_str(res_value.as_mut_str()))
+    }
+
+
+
+    fn bool_and(&mut self, source1: String, source2: String, res_var: String) -> Result<bool, String> {
+        let source1 = self.var_get(source1).unwrap();
+        let source2 = self.var_get(source2).unwrap();
+        let mut res_value = ((source1 == "true") && (source2 == "true")).to_string();
+        self.var_set(res_var, to_value_str(res_value.as_mut_str()))
+    }
+    fn bool_or(&mut self, source1: String, source2: String, res_var: String) -> Result<bool, String> {
+        let source1 = self.var_get(source1).unwrap();
+        let source2 = self.var_get(source2).unwrap();
+        let mut res_value = ((source1 == "true") || (source2 == "true")).to_string();
+        self.var_set(res_var, to_value_str(res_value.as_mut_str()))
+    }
+    fn bool_not(&mut self, source: String, res_var: String) -> Result<bool, String> {
+        let source = self.var_get(source).unwrap();
+        let mut res_value = ((source != "true")).to_string();
+        self.var_set(res_var, to_value_str(res_value.as_mut_str()))
+    }
 
 
 
@@ -373,9 +399,9 @@ impl System {
                 "set" => {
                     self.var_set(step.args_get(0), step.args_get(1));
                 },
-                "get" => {
+                /* "get" => {
                     self.var_get(step.args_get(0));
-                },
+                }, */
                 "del" => {
                     self.var_del(step.args_get(0));
                 },
@@ -428,6 +454,9 @@ impl System {
                 "len" => {
                     self.str_len(step.args_get(0), step.args_get(1));
                 },
+                "eq" => {
+                    self.str_eq(step.args_get(0), step.args_get(1), step.args_get(2));
+                },
                 _ => {
                     logger::log(format!("Unknown command: {} in module: {} on line {}", step.get_command(), step.get_module(), step.get_line()), logger::LogType::ERROR);
                 }
@@ -458,6 +487,20 @@ impl System {
                 },
                 "exists" => {
                     self.file_exists(step.args_get(0),step.args_get(1));
+                },
+                _ => {
+                    logger::log(format!("Unknown command: {} in module: {} on line {}", step.get_command(), step.get_module(), step.get_line()), logger::LogType::ERROR);
+                }
+            },
+            "bool" => match step.get_command().as_str() {
+                "and" => {
+                    self.bool_and(step.args_get(0), step.args_get(1), step.args_get(2));
+                },
+                "or" => {
+                    self.bool_or(step.args_get(0), step.args_get(1), step.args_get(2));
+                },
+                "not" => {
+                    self.bool_not(step.args_get(0), step.args_get(1));
                 },
                 _ => {
                     logger::log(format!("Unknown command: {} in module: {} on line {}", step.get_command(), step.get_module(), step.get_line()), logger::LogType::ERROR);
