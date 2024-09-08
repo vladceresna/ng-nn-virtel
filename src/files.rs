@@ -1,5 +1,6 @@
 use std::fs;
 use std::path::Path;
+use homedir::my_home;
 
 pub fn is_steps_file(name: String) -> bool {
     if name.ends_with(".steps") {
@@ -43,7 +44,7 @@ pub fn init_environment() -> String {
 }
 #[cfg(target_os = "linux")]
 pub fn init_environment() -> String {
-    create_dir(String::from("/home/Virtel/apps/vladceresna.virtel.launcher/bin/"))
+    create_dir(format!("{}/Virtel/apps/vladceresna.virtel.launcher/bin/", my_home().unwrap().expect("REASON").display()))
 }
 pub fn create_dir(path: String) -> String {
     match fs::create_dir(path.clone()) {
@@ -67,7 +68,7 @@ pub fn get_full_path(path: String) -> String {
 
 #[cfg(target_os = "linux")]
 pub fn get_full_path(path: String) -> String {
-    format!("{}{}", String::from("/home/Virtel"), path)
+    format!("{}{}{}", my_home().unwrap().expect("REASON").display(),"/Virtel", path)
 }
 
 #[cfg(target_os = "android")]//linux
