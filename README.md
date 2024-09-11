@@ -101,7 +101,7 @@ Outputs:
 ---------
 ### List of currently supported platforms:
 * [x] Windows
-* [ ] Linux
+* [x] Linux
 * [ ] Redox
 * [ ] MacOS
 * [ ] iOS
