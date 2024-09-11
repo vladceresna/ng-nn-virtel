@@ -1,26 +1,34 @@
-
+use std::borrow::BorrowMut;
+use std::fmt::format;
+use std::net::{TcpListener, TcpStream};
+use std::thread::JoinHandle;
+use std::{thread, time::Duration};
 use std::collections::HashMap;
-use std::io::Write;
+use std::io::{BufReader, Write};
 use std::{error, io};
 use std::num::ParseFloatError;
 use regex::Regex;
 use crate::logger::LogType;
-
 use super::logger;
 use std::fs;
 use std::path;
 use std::error::Error;
 use super::step;
+use std::io::BufRead;
+
+
 
 pub struct System {
     /* lists: HashMap<String, Vec<String>>, */
+    main: bool,
     id: String,
     vars: HashMap<String, String>,
+    tcp_streams: HashMap<String, TcpStream>,
     bins: Vec<String>,
 }
 impl System {
-    pub fn new(id: String, bins: Vec<String>) -> System {
-        System {/*  lists: HashMap::new(),  */ id, vars: HashMap::new(), bins }
+    pub fn new(main: bool, id: String, bins: Vec<String>) -> System {
+        System {/*  lists: HashMap::new(),  */ main, id, vars: HashMap::new(), tcp_streams: HashMap::new(), bins }
     }
 
     pub fn var_del(&mut self, name: String) -> Result<bool, String>{
@@ -79,9 +87,6 @@ impl System {
     } */
 
 
-
-
-    
     pub fn start(&mut self){
         let result = self.get_bin_with_name("start.steps".to_string());
         match result {
@@ -98,6 +103,28 @@ impl System {
         Err(format!("File {name} not found").into())
     }
 
+    pub fn run_thread(&mut self, file_name: String){
+        let file_name = self.var_get(file_name).unwrap();
+        let get_code_res = self.get_bin_with_name(file_name.clone());
+        let code: String;
+
+        let mut system = System::new(false, self.id.clone(), self.bins.clone());
+        logger::log(format!("New thread (system) created"), logger::LogType::INFO);
+        match get_code_res {
+            Ok(v) => {
+                let handle = thread::spawn(move || {
+                    system.run(v);
+                });
+            },
+            Err(_) => {
+                logger::log(format!("Bin with name {file_name} not found"), logger::LogType::ERROR);
+            }
+        }
+        
+    }
+    pub fn run_pause(&mut self, duration: String){
+        thread::sleep(Duration::from_millis(to_number_str(self.var_get(duration).unwrap()) as u64));
+    }
     pub fn run_one(&mut self, file_name: String){
         let file_name = self.var_get(file_name).unwrap();
         let get_code_res = self.get_bin_with_name(file_name.clone());
@@ -112,8 +139,7 @@ impl System {
         }
     }
     pub fn run_if(&mut self, truely: String, file_name1: String, file_name2: String){
-        let truely = self.var_get(truely).unwrap();
-        if(truely == "true") {
+        if self.var_get(truely).unwrap() == "true" {
             self.run_one(file_name1);
         } else {
             if file_name2 != "not" {
@@ -122,7 +148,7 @@ impl System {
         }
     }
     pub fn run_while(&mut self, truely: String, file_name: String){
-        while(self.var_get(truely.clone()).unwrap() == "true") {
+        while self.var_get(truely.clone()).unwrap() == "true" {
             self.run_one(file_name.clone());
         }
     }
@@ -219,8 +245,6 @@ impl System {
     }
 
 
-
-
     pub fn str_plus(&mut self, mut args: Vec<String>) -> Result<bool, String> {
         let res_var = args.pop().unwrap();
         let mut res_value = String::from("");
@@ -262,7 +286,6 @@ impl System {
     }
 
 
-
     fn bool_and(&mut self, source1: String, source2: String, res_var: String) -> Result<bool, String> {
         let source1 = self.var_get(source1).unwrap();
         let source2 = self.var_get(source2).unwrap();
@@ -282,8 +305,6 @@ impl System {
     }
 
 
-
-    
     fn dir_new(&mut self, path: String) -> Result<bool, String>{
         let path = self.var_get(path).unwrap();
         match fs::create_dir_all(path.clone()) {
@@ -363,18 +384,6 @@ impl System {
             }
         }
     }
-    
-    
-    
-    
-    
-    /*
-    fn server_new(name: String, port: String) -> Result<(bool), String>;
-
-    fn client_new(name: String) -> Result<(bool), String>;
-    */
-
-
 
 
     
@@ -424,7 +433,7 @@ impl System {
                 }
             }
         }
-    
+
         Ok(true)
     }
 
@@ -582,6 +591,12 @@ impl System {
             "run" => match step.get_command().as_str() {
                 "one" => {
                     self.run_one(step.args_get(0));
+                },
+                "thread" => {
+                    self.run_thread(step.args_get(0));
+                },
+                "pause" => {
+                    self.run_pause(step.args_get(0));
                 },
                 "if" => {
                     self.run_if(step.args_get(0), step.args_get(1), step.args_get(2));

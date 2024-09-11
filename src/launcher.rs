@@ -2,6 +2,7 @@ use super::logger;
 use super::files;
 use super::apps;
 use std::io;
+use std::thread;
 
 pub fn launch() -> Result<bool, String> {
     let version = "0.1.4";
@@ -18,8 +19,8 @@ pub fn launch() -> Result<bool, String> {
         }
     }
     
-    logger::log(String::from("Finish Virtel Platform"), logger::LogType::SUCCESS);
-    
+    logger::log(String::from("Finish Virtel Platform Launcher. Some background threads may be runs currently"), logger::LogType::SUCCESS);
+
     let mut input = String::new();
     io::stdin().read_line(&mut input).unwrap();
 
